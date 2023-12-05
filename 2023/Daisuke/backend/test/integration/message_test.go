@@ -3,8 +3,8 @@ package integration
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/google/go-cmp/cmp"
 	"io"
-	"reflect"
 	"testing"
 )
 
@@ -83,8 +83,8 @@ func Test_Integration_CreateTodo(t *testing.T) {
 				t.Errorf("[integration test] Mutation { CreateTodo }v: actual statusCode = %v, expected statusCode = %v", recorder.Code, tt.expected.statusCode)
 			}
 
-			if !reflect.DeepEqual(res.Data.CreateTodo, tt.expected.todo) {
-				t.Errorf("Mutation { CreateTodo } invalid Todo : actual todo = %v, expected todo = %v", res, tt.expected.todo)
+			if diff := cmp.Diff(res.Data.CreateTodo, tt.expected.todo); diff != "" {
+				t.Errorf("[integration test] query { CreateTodo } value is mismatch (-actual +expected):\n%s", diff)
 			}
 		})
 	}
