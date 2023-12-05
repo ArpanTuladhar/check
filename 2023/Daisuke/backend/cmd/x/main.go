@@ -1,15 +1,17 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/domain/service"
-	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/handler/graph"
-	generated "github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/handler/graph/generated"
+	h "github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/handler"
 	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/infrastructure/todo"
-	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/99designs/gqlgen/graphql/playground"
-	"log"
+	"net"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 const defaultPort = "8080"
@@ -20,13 +22,42 @@ func main() {
 		port = defaultPort
 	}
 
+	addr := fmt.Sprintf(":%s", port)
+	listener, err2 := net.Listen("tcp", addr)
+	if err2 != nil {
+		panic(err2)
+	}
+
 	todoWriter := todo.NewTodoWriter()
 	todoCreator := service.NewTodoCreator(todoWriter)
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(graph.New(todoCreator)))
+	router := h.NewHTTPServer(todoCreator)
 
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
+	ch := make(chan error)
+	go func() {
+		srv := &http.Server{
+			Handler:           router,
+			ReadTimeout:       15 * time.Second,
+			ReadHeaderTimeout: 5 * time.Second,
+			WriteTimeout:      30 * time.Second,
+			IdleTimeout:       30 * time.Second,
+		}
+		ch <- srv.Serve(listener)
+	}()
 
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	fmt.Println("started todo server")
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
+	ctx, cancel := context.WithCancel(context.Background())
+	go func() {
+		select {
+		case <-sigCh:
+			_ = listener.Close()
+		case err := <-ch:
+			_ = listener.Close()
+			fmt.Println("error!!", err.Error())
+		}
+		cancel()
+	}()
+	<-ctx.Done()
+
 }
