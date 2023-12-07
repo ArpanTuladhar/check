@@ -6,6 +6,7 @@ import (
 	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/domain/service"
 	h "github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/handler"
 	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/infrastructure/todo"
+	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/middleware"
 	"net"
 	"net/http"
 	"os"
@@ -30,7 +31,9 @@ func main() {
 
 	todoWriter := todo.NewTodoWriter()
 	todoCreator := service.NewTodoCreator(todoWriter)
-	router := h.NewHTTPServer(todoCreator)
+
+	middle := middleware.NewMiddleware()
+	router := h.NewHTTPServer(middle, todoCreator)
 
 	ch := make(chan error)
 	go func() {

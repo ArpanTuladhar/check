@@ -6,6 +6,7 @@ import (
 	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/domain/service"
 	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/handler"
 	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/infrastructure/todo"
+	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/middleware"
 	"net/http"
 	"net/http/httptest"
 )
@@ -29,8 +30,9 @@ func DoGraphQLRequest(
 }
 
 func initHttpServerForIntegrationTest(ctx context.Context) http.Handler {
+	middle := middleware.NewMiddleware()
 	todoWriter := todo.NewTodoWriter()
 	todoCreator := service.NewTodoCreator(todoWriter)
-	handler := handler.NewHTTPServer(todoCreator)
+	handler := handler.NewHTTPServer(middle, todoCreator)
 	return handler
 }
