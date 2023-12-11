@@ -14,4 +14,5 @@ type Resolver struct {
 
 func New(todoCreator usecase.TodoCreator) generated.Config {
 	return generated.Config{Resolvers: &Resolver{todoCreator: todoCreator}}
+
 }
