@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/domain/service"
 	"github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/handler/graph"
 	generated "github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/handler/graph/generated"
 
@@ -20,7 +21,8 @@ func main() {
 		port = defaultPort
 	}
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+	todoCreator := service.NewTodoCreator()
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(graph.New(todoCreator)))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
