@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/handler/graph"
-	generated "github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/handler/graph/generated"
+	"github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/handler/graph"
+	generated "github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/handler/graph/generated"
 
 	"log"
 	"net/http"
