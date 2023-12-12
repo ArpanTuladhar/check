@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
-	"os"
 
+	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/config"
+	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/domain/service"
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/handler/graph"
 	generated "github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/handler/graph/generated"
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -15,13 +15,11 @@ import (
 const defaultPort = "8080"
 
 func main() {
-	fmt.Println("it works!!")
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = defaultPort
-	}
+	appConfig := config.LoadAppConfig()
+	port := appConfig.Port
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+	todoCreator := service.NewTodoCreator()
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(graph.New(todoCreator)))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
