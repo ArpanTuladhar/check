@@ -5,14 +5,13 @@ package graph
 import (
 	"bytes"
 	"context"
-	"embed"
 	"errors"
 	"fmt"
 	"strconv"
 	"sync"
 	"sync/atomic"
 
-	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/cmd/graph/model"
+	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/handler/graph/model"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	gqlparser "github.com/vektah/gqlparser/v2"
@@ -260,19 +259,36 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 	return introspection.WrapTypeFromDef(ec.Schema(), ec.Schema().Types[name]), nil
 }
 
-//go:embed "schema.graphqls"
-var sourcesFS embed.FS
+var sources = []*ast.Source{
+	{Name: "../../../../graph/schema.graphqls", Input: `# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
 
-func sourceData(filename string) string {
-	data, err := sourcesFS.ReadFile(filename)
-	if err != nil {
-		panic(fmt.Sprintf("codegen problem: %s not available", filename))
-	}
-	return string(data)
+type Todo {
+  id: ID!
+  text: String!
+  done: Boolean!
+  user: User!
 }
 
-var sources = []*ast.Source{
-	{Name: "schema.graphqls", Input: sourceData("schema.graphqls"), BuiltIn: false},
+type User {
+  id: ID!
+  name: String!
+}
+
+type Query {
+  todos: [Todo!]!
+}
+
+input NewTodo {
+  text: String!
+  userId: String!
+}
+
+type Mutation {
+  createTodo(input: NewTodo!): Todo!
+}
+`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
@@ -286,7 +302,7 @@ func (ec *executionContext) field_Mutation_createTodo_args(ctx context.Context, 
 	var arg0 model.NewTodo
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewTodo2githubᚗcomᚋ88labsᚋandpadᚑengineerᚑtrainingᚋ2023ᚋKumarᚋbackendᚋcmdᚋgraphᚋmodelᚐNewTodo(ctx, tmp)
+		arg0, err = ec.unmarshalNNewTodo2githubᚗcomᚋ88labsᚋandpadᚑengineerᚑtrainingᚋ2023ᚋKumarᚋbackendᚋinternalᚋhandlerᚋgraphᚋmodelᚐNewTodo(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -376,7 +392,7 @@ func (ec *executionContext) _Mutation_createTodo(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.Todo)
 	fc.Result = res
-	return ec.marshalNTodo2ᚖgithubᚗcomᚋ88labsᚋandpadᚑengineerᚑtrainingᚋ2023ᚋKumarᚋbackendᚋcmdᚋgraphᚋmodelᚐTodo(ctx, field.Selections, res)
+	return ec.marshalNTodo2ᚖgithubᚗcomᚋ88labsᚋandpadᚑengineerᚑtrainingᚋ2023ᚋKumarᚋbackendᚋinternalᚋhandlerᚋgraphᚋmodelᚐTodo(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createTodo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -441,7 +457,7 @@ func (ec *executionContext) _Query_todos(ctx context.Context, field graphql.Coll
 	}
 	res := resTmp.([]*model.Todo)
 	fc.Result = res
-	return ec.marshalNTodo2ᚕᚖgithubᚗcomᚋ88labsᚋandpadᚑengineerᚑtrainingᚋ2023ᚋKumarᚋbackendᚋcmdᚋgraphᚋmodelᚐTodoᚄ(ctx, field.Selections, res)
+	return ec.marshalNTodo2ᚕᚖgithubᚗcomᚋ88labsᚋandpadᚑengineerᚑtrainingᚋ2023ᚋKumarᚋbackendᚋinternalᚋhandlerᚋgraphᚋmodelᚐTodoᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_todos(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -756,7 +772,7 @@ func (ec *executionContext) _Todo_user(ctx context.Context, field graphql.Collec
 	}
 	res := resTmp.(*model.User)
 	fc.Result = res
-	return ec.marshalNUser2ᚖgithubᚗcomᚋ88labsᚋandpadᚑengineerᚑtrainingᚋ2023ᚋKumarᚋbackendᚋcmdᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+	return ec.marshalNUser2ᚖgithubᚗcomᚋ88labsᚋandpadᚑengineerᚑtrainingᚋ2023ᚋKumarᚋbackendᚋinternalᚋhandlerᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Todo_user(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3256,7 +3272,7 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 	return res
 }
 
-func (ec *executionContext) unmarshalNNewTodo2githubᚗcomᚋ88labsᚋandpadᚑengineerᚑtrainingᚋ2023ᚋKumarᚋbackendᚋcmdᚋgraphᚋmodelᚐNewTodo(ctx context.Context, v interface{}) (model.NewTodo, error) {
+func (ec *executionContext) unmarshalNNewTodo2githubᚗcomᚋ88labsᚋandpadᚑengineerᚑtrainingᚋ2023ᚋKumarᚋbackendᚋinternalᚋhandlerᚋgraphᚋmodelᚐNewTodo(ctx context.Context, v interface{}) (model.NewTodo, error) {
 	res, err := ec.unmarshalInputNewTodo(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -3276,11 +3292,11 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNTodo2githubᚗcomᚋ88labsᚋandpadᚑengineerᚑtrainingᚋ2023ᚋKumarᚋbackendᚋcmdᚋgraphᚋmodelᚐTodo(ctx context.Context, sel ast.SelectionSet, v model.Todo) graphql.Marshaler {
+func (ec *executionContext) marshalNTodo2githubᚗcomᚋ88labsᚋandpadᚑengineerᚑtrainingᚋ2023ᚋKumarᚋbackendᚋinternalᚋhandlerᚋgraphᚋmodelᚐTodo(ctx context.Context, sel ast.SelectionSet, v model.Todo) graphql.Marshaler {
 	return ec._Todo(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNTodo2ᚕᚖgithubᚗcomᚋ88labsᚋandpadᚑengineerᚑtrainingᚋ2023ᚋKumarᚋbackendᚋcmdᚋgraphᚋmodelᚐTodoᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Todo) graphql.Marshaler {
+func (ec *executionContext) marshalNTodo2ᚕᚖgithubᚗcomᚋ88labsᚋandpadᚑengineerᚑtrainingᚋ2023ᚋKumarᚋbackendᚋinternalᚋhandlerᚋgraphᚋmodelᚐTodoᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Todo) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3304,7 +3320,7 @@ func (ec *executionContext) marshalNTodo2ᚕᚖgithubᚗcomᚋ88labsᚋandpadᚑ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNTodo2ᚖgithubᚗcomᚋ88labsᚋandpadᚑengineerᚑtrainingᚋ2023ᚋKumarᚋbackendᚋcmdᚋgraphᚋmodelᚐTodo(ctx, sel, v[i])
+			ret[i] = ec.marshalNTodo2ᚖgithubᚗcomᚋ88labsᚋandpadᚑengineerᚑtrainingᚋ2023ᚋKumarᚋbackendᚋinternalᚋhandlerᚋgraphᚋmodelᚐTodo(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3324,7 +3340,7 @@ func (ec *executionContext) marshalNTodo2ᚕᚖgithubᚗcomᚋ88labsᚋandpadᚑ
 	return ret
 }
 
-func (ec *executionContext) marshalNTodo2ᚖgithubᚗcomᚋ88labsᚋandpadᚑengineerᚑtrainingᚋ2023ᚋKumarᚋbackendᚋcmdᚋgraphᚋmodelᚐTodo(ctx context.Context, sel ast.SelectionSet, v *model.Todo) graphql.Marshaler {
+func (ec *executionContext) marshalNTodo2ᚖgithubᚗcomᚋ88labsᚋandpadᚑengineerᚑtrainingᚋ2023ᚋKumarᚋbackendᚋinternalᚋhandlerᚋgraphᚋmodelᚐTodo(ctx context.Context, sel ast.SelectionSet, v *model.Todo) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -3334,7 +3350,7 @@ func (ec *executionContext) marshalNTodo2ᚖgithubᚗcomᚋ88labsᚋandpadᚑeng
 	return ec._Todo(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋ88labsᚋandpadᚑengineerᚑtrainingᚋ2023ᚋKumarᚋbackendᚋcmdᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
+func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋ88labsᚋandpadᚑengineerᚑtrainingᚋ2023ᚋKumarᚋbackendᚋinternalᚋhandlerᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
