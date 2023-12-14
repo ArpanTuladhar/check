@@ -3,12 +3,13 @@ package integration
 import (
 	"bytes"
 	"context"
+	"net/http"
+	"net/http/httptest"
+
 	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/domain/service"
 	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/handler"
 	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/infrastructure/todo"
 	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/middleware"
-	"net/http"
-	"net/http/httptest"
 )
 
 func DoGraphQLRequest(

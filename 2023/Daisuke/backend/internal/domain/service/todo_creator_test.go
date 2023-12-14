@@ -2,12 +2,13 @@ package service
 
 import (
 	"context"
+	"testing"
+
 	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/domain/gateway"
 	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/domain/model/todo"
 	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/usecase/input"
 	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/usecase/output"
 	"github.com/google/go-cmp/cmp"
-	"testing"
 )
 
 func TestCreateTodo(t *testing.T) {

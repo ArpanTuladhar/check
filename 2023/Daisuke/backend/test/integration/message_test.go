@@ -3,9 +3,10 @@ package integration
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/google/go-cmp/cmp"
 	"io"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func Test_Integration_CreateTodo(t *testing.T) {
