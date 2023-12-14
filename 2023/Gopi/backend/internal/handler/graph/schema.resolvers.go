@@ -6,15 +6,22 @@ package graph
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	graph "github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/handler/graph/generated"
 	"github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/handler/graph/model"
+	usecase_input "github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/usecase/input"
 )
 
 // CreateTodo is the resolver for the createTodo field.
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: CreateTodo - createTodo"))
+	todo, err := r.todoCreator.CreateTodo(ctx, &usecase_input.TodoCreator{Text: input.Text})
+	if err != nil {
+		return nil, errors.New("error")
+	}
+
+	return &model.Todo{ID: todo.ID.String(), Text: todo.Text}, nil
 }
 
 // Todos is the resolver for the todos field.
