@@ -1,8 +1,9 @@
 package middleware
 
 import (
-	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/domain/model/session"
 	"net/http"
+
+	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/domain/model/session"
 )
 
 func (m middleware) WithAuth() func(http.Handler) http.Handler {

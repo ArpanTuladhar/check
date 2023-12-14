@@ -8,10 +8,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
+
 	graph "github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/handler/graph/generated"
 	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/handler/graph/model"
 	usecase_input "github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/usecase/input"
-	"strconv"
 )
 
 // CreateTodo is the resolver for the createTodo field.
