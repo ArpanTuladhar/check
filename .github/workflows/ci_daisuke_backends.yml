@@ -11,14 +11,35 @@ on:
       - '.github/workflows/ci_daisuke_backends.yml'
 
 jobs:
-  test:
-    name: Test
+  lint_test:
+    name: Lint&Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v3
         with:
           go-version: 1.21.4
+      # install golangci-lint
+      - name: Detect the version of golangci-lint
+        id: golangci-lint-version
+        uses: ./.github/actions/detect-version
+        with:
+          name: golangci/golangci-lint
+          version: 'latest'
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Cache golangci-lint
+        id: golangci-lint-cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.local/bin/golangci-lint
+          key: golangci-lint-${{ runner.os }}-${{ runner.arch }}-${{ steps.golangci-lint-version.outputs.version }}
+      - name: Install golangci-lint
+        if: steps.golangci-lint-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b ~/.local/bin v${{ steps.golangci-lint-version.outputs.version }}
+      - name: Lint
+        run: make lint
+        working-directory: 2023/Daisuke/backend
       - name: Test
         run: make test
         working-directory: 2023/Daisuke/backend
