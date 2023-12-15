@@ -11,8 +11,8 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 
-	"github.com/88labs/andpad-engineer-training/2023/Prashant/backend/internal/handler/graph"
-	graph "github.com/88labs/andpad-engineer-training/2023/Prashant/backend/internal/handler/graph/generated"
+	graph "github.com/88labs/andpad-engineer-training/2023/Prashant/backend/internal"
+	generated "github.com/88labs/andpad-engineer-training/2023/Prashant/backend/internal/handler/graph/generated"
 )
 
 func main() {
@@ -36,13 +36,13 @@ func main() {
 	// Start the HTTP server in a goroutine.
 	server := &http.Server{
 		Addr:    ":" + port,
-		Handler: http.DefaultServeMux,
+		Handler: srv,
 	}
 
 	go func() {
 		fmt.Printf("Server is starting on http://localhost:%s\n", port)
 		if err := server.ListenAndServe(); err != http.ErrServerClosed {
-			fmt.Printf("Server error: %v\n", err)
+			fmt.Printf("Start http.server failed: %v\n", err)
 			cancel()
 		}
 	}()
@@ -58,9 +58,10 @@ func waitForInterrupt(ctx context.Context, server *http.Server) {
 	// Blocked until a signal is received or the context is canceled.
 	select {
 	case sig := <-c:
-		fmt.Printf("\nReceived signal: %v\n", sig)
+		fmt.Printf("Received signal: %v\n", sig)
 	case <-ctx.Done():
-		fmt.Println("Context canceled")
+		fmt.Println("Context was cancelled")
+		return
 	}
 
 	// context with a timeout for graceful shutdown.
