@@ -10,3 +10,10 @@ type Todo struct {
 type NewTodo struct {
 	Text string
 }
+
+func (id *TodoID) String() string {
+	if id == nil {
+		return ""
+	}
+	return string(*id)
+}

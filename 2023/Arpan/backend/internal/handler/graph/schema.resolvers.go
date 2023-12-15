@@ -6,19 +6,26 @@ package graph
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	graph "github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/handler/graph/generated"
-	model1 "github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/handler/graph/model"
+	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/handler/graph/model"
+	usecase_input "github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/usecase/input"
 )
 
 // CreateTodo is the resolver for the createTodo field.
-func (r *mutationResolver) CreateTodo(ctx context.Context, input model1.NewTodo) (*model1.Todo, error) {
-	panic(fmt.Errorf("not implemented: CreateTodo - createTodo"))
+func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
+	todo, err := r.todoCreator.CreateTodo(ctx, &usecase_input.TodoCreator{Text: input.Text})
+	if err != nil {
+		return nil, errors.New("error")
+	}
+
+	return &model.Todo{ID: todo.ID.String(), Text: todo.Text}, nil
 }
 
 // Todos is the resolver for the todos field.
-func (r *queryResolver) Todos(ctx context.Context) ([]*model1.Todo, error) {
+func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
 	panic(fmt.Errorf("not implemented: Todos - todos"))
 }
 
