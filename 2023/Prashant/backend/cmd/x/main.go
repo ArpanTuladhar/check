@@ -15,6 +15,31 @@ import (
 	generated "github.com/88labs/andpad-engineer-training/2023/Prashant/backend/internal/handler/graph/generated"
 )
 
+func waitForInterrupt(ctx context.Context, server *http.Server) {
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+
+	// Blocked until a signal is received or the context is canceled.
+	select {
+	case sig := <-c:
+		fmt.Printf("Received signal: %v\n", sig)
+	case <-ctx.Done():
+		fmt.Println("Context was cancelled")
+		return
+	}
+
+	// context with a timeout for graceful shutdown.
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// shut down the server gracefully.
+	if err := server.Shutdown(shutdownCtx); err != nil {
+		fmt.Printf("Error during server shutdown: %v\n", err)
+		return
+	}
+	fmt.Println("Server gracefully shut down")
+}
+
 func main() {
 	// context that listens for interrupt and terminate signals.
 	ctx, cancel := context.WithCancel(context.Background())
@@ -49,29 +74,4 @@ func main() {
 
 	// Wait for interrupt signal to gracefully shut down the server.
 	waitForInterrupt(ctx, server)
-}
-
-func waitForInterrupt(ctx context.Context, server *http.Server) {
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-
-	// Blocked until a signal is received or the context is canceled.
-	select {
-	case sig := <-c:
-		fmt.Printf("Received signal: %v\n", sig)
-	case <-ctx.Done():
-		fmt.Println("Context was cancelled")
-		return
-	}
-
-	// context with a timeout for graceful shutdown.
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	// shut down the server gracefully.
-	if err := server.Shutdown(shutdownCtx); err != nil {
-		fmt.Printf("Error during server shutdown: %v\n", err)
-	} else {
-		fmt.Println("Server gracefully shut down")
-	}
 }
