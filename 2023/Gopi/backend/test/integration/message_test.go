@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"reflect"
 	"testing"
+
+	"github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/handler/graph/model"
+	"github.com/google/go-cmp/cmp"
 )
 
 func Test_Integration_CreateTodo(t *testing.T) {
@@ -17,17 +19,12 @@ func Test_Integration_CreateTodo(t *testing.T) {
 		q query
 	}
 
-	type todo struct {
-		Id   string `json:"id"`
-		Text string `json:"text"`
-	}
-
 	type expected struct {
-		todo       todo
+		todo       *model.Todo
 		statusCode int
 	}
 	type createTodoResponse struct {
-		CreateTodo todo `json:"createTodo"`
+		CreateTodo *model.Todo `json:"createTodo"`
 	}
 	type createTodoResponseData struct {
 		Data createTodoResponse `json:"data"`
@@ -55,7 +52,13 @@ func Test_Integration_CreateTodo(t *testing.T) {
 					`,
 				},
 			},
-			expected: expected{todo: todo{Id: "todo_id_1", Text: "test"}, statusCode: 200},
+			expected: expected{
+				todo: &model.Todo{
+					ID:   "todo_id_1",
+					Text: "test",
+				},
+				statusCode: 200,
+			},
 		},
 	}
 
@@ -83,8 +86,8 @@ func Test_Integration_CreateTodo(t *testing.T) {
 				t.Errorf("[integration test] Mutation { CreateTodo }v: actual statusCode = %v, expected statusCode = %v", recorder.Code, tt.expected.statusCode)
 			}
 
-			if !reflect.DeepEqual(res.Data.CreateTodo, tt.expected.todo) {
-				t.Errorf("Mutation { CreateTodo } invalid Todo : actual todo = %v, expected todo = %v", res, tt.expected.todo)
+			if diff := cmp.Diff(res.Data.CreateTodo, tt.expected.todo); diff != "" {
+				t.Errorf("[integration test] query { CreateTodo } value is mismatch (-actual +expected):\n%s", diff)
 			}
 		})
 	}

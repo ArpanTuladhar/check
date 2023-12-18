@@ -3,17 +3,16 @@ package main
 import (
 	"context"
 	"fmt"
-
-	"github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/domain/service"
-	h "github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/handler"
-	"github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/infrastructure/todo"
-
 	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/domain/service"
+	h "github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/handler"
+	"github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/infrastructure/todo"
 )
 
 const defaultPort = "8080"
