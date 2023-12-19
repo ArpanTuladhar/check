@@ -1,0 +1,14 @@
+---
+dev:
+  adapter: mysql2
+  host: database
+  username: root
+  password: password
+  database: todo_dev
+
+test:
+  adapter: mysql2
+  host: database
+  username: root
+  password: password
+  database: todo_test
