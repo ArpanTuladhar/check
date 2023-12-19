@@ -21,6 +21,8 @@ services:
       - app
       - dev
       - db
+    security_opt:
+      - no-new-privileges:true
 
   dbmigrator:
     build:
