@@ -8,6 +8,7 @@ import (
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/domain/service"
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/handler/graph"
 	generated "github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/handler/graph/generated"
+	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/infrastructure/datastore"
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/infrastructure/todo"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -16,6 +17,13 @@ import (
 const defaultPort = "8080"
 
 func main() {
+	// Connect to the database
+	db, err := datastore.Connect()
+	if err != nil {
+		log.Fatal("Error connecting to the database:", err)
+	}
+	defer db.Close()
+
 	appConfig := config.LoadAppConfig()
 	port := appConfig.Port
 
@@ -27,6 +35,6 @@ func main() {
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
 
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
+	log.Printf("Connected to the database. Now, connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }

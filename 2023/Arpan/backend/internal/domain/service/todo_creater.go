@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"errors"
+	"fmt"
 
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/domain/gateway"
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/domain/model/todo"
@@ -20,9 +20,9 @@ func NewTodoCreator(todoCommandsGateway gateway.TodoCommandsGateway) usecase.Tod
 }
 
 func (t todoCreator) CreateTodo(ctx context.Context, in *input.TodoCreator) (*output.TodoCreator, error) {
-	todo, err := t.todoCommandsGateway.CreateTodo(ctx, &todo.NewTodo{Text: "text"})
+	todo, err := t.todoCommandsGateway.Create(ctx, &todo.NewTodo{Text: in.Text})
 	if err != nil {
-		return nil, errors.New("error")
+		return nil, fmt.Errorf("failed to create todo: %v", err)
 	}
 
 	return &output.TodoCreator{ID: todo.ID, Text: todo.Text}, nil
