@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/utils/config"
+	"github.com/99designs/gqlgen/graphql/playground"
 	"net/http"
 
 	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/handler/graph"
@@ -11,7 +13,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func NewHTTPServer(middle middleware.Middleware, todoCreator usecase.TodoCreator) http.Handler {
+func NewHTTPServer(c *config.Config, middle middleware.Middleware, todoCreator usecase.TodoCreator) http.Handler {
 	router := chi.NewRouter()
 	router.Route("/graphql", func(r chi.Router) {
 		r.Use(
@@ -20,6 +22,10 @@ func NewHTTPServer(middle middleware.Middleware, todoCreator usecase.TodoCreator
 		srv := handler.NewDefaultServer(generated.NewExecutableSchema(graph.New(todoCreator)))
 		r.Handle("/", srv)
 	})
+
+	if c.Env != config.EnvProduction {
+		router.Handle("/playground", playground.Handler("GraphQL playground", "/graphql"))
+	}
 
 	return router
 }
