@@ -3,6 +3,7 @@ package todo
 import (
 	"context"
 	"errors"
+	"github.com/google/uuid"
 
 	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/domain/gateway"
 	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/domain/model/session"
@@ -21,5 +22,23 @@ func (t todoWriter) CreateTodo(ctx context.Context, newTodo *todo.NewTodo) (*tod
 	if err != nil {
 		return nil, errors.New("failed to fetch a session")
 	}
-	return &todo.Todo{ID: "todo_id_1", Text: "test", UserID: s.UserId}, nil
+	tx, err := ExtractTodoDB(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	createdTodo := &todo.Todo{
+		ID:     todo.TodoID(uuid.NewString()),
+		Text:   newTodo.Text,
+		UserID: s.UserId,
+	}
+
+	db := tx.WithContext(ctx)
+	if err := db.
+		Create(&createdTodo).
+		Take(&createdTodo).Error; err != nil {
+		return nil, err
+	}
+
+	return createdTodo, nil
 }

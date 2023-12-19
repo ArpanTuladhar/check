@@ -29,8 +29,16 @@ func main() {
 		panic(err2)
 	}
 
+	ownerConn, cleanup, err := todo.NewOwnerSQLHandler(conf)
+	defer cleanup()
+	if err != nil {
+		panic(err)
+	}
+	binder := todo.NewConnectionBinder(ownerConn)
+	transactor := todo.NewTransactor(ownerConn)
+
 	todoWriter := todo.NewTodoWriter()
-	todoCreator := service.NewTodoCreator(todoWriter)
+	todoCreator := service.NewTodoCreator(conf, binder, transactor, todoWriter)
 
 	middle := middleware.NewMiddleware()
 	router := h.NewHTTPServer(conf, middle, todoCreator)
