@@ -16,6 +16,7 @@ import (
 
 	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/domain/service"
 	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/handler/graph"
+	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/infrastructure/todo"
 	generated "github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/handler/graph/generated"
 )
 
@@ -40,7 +41,8 @@ func playgroundHandler() httprouter.Handle {
 }
 
 func graphqlHandler() httprouter.Handle {
-	todoCreator := service.NewTodoCreator()
+	todoWriter := todo.NewTodoWriter()
+	todoCreator := service.NewTodoCreator(todoWriter)
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(graph.New(todoCreator)))
 
 	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
