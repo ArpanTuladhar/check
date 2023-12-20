@@ -14,6 +14,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 
+	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/domain/service"
 	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/handler/graph"
 	generated "github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/handler/graph/generated"
 )
@@ -39,7 +40,8 @@ func playgroundHandler() httprouter.Handle {
 }
 
 func graphqlHandler() httprouter.Handle {
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+	todoCreator := service.NewTodoCreator()
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(graph.New(todoCreator)))
 
 	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		srv.ServeHTTP(w, r)
