@@ -21,7 +21,10 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 		return nil, errors.New("error")
 	}
 
-	return &model.Todo{ID: todo.ID.String(), Text: todo.Text}, nil
+	return &model.Todo{ID: todo.ID.String(), Text: todo.Text, User: &model.User{
+		ID:   "",
+		Name: "",
+	}}, nil
 }
 
 // Todos is the resolver for the todos field.
