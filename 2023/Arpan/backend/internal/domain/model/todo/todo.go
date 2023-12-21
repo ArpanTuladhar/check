@@ -2,13 +2,12 @@ package todo
 
 type TodoID string
 type Todo struct {
-	ID   TodoID
-	User *User
-	Text string
+	ID     TodoID
+	Text   string
+	UserID int32
 }
 
 type NewTodo struct {
-	User *User
 	Text string
 }
 
@@ -17,9 +16,4 @@ func (id *TodoID) String() string {
 		return ""
 	}
 	return string(*id)
-}
-
-type User struct {
-	ID   string
-	Name string
 }

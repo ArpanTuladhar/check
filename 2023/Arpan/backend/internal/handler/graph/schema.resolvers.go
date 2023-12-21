@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 
 	graph "github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/handler/graph/generated"
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/handler/graph/model"
@@ -21,10 +22,7 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 		return nil, errors.New("error")
 	}
 
-	return &model.Todo{ID: todo.ID.String(), Text: todo.Text, User: &model.User{
-		ID:   "",
-		Name: "",
-	}}, nil
+	return &model.Todo{ID: todo.ID.String(), Text: todo.Text, User: &model.User{ID: strconv.Itoa((int)(todo.UserID))}}, nil
 }
 
 // Todos is the resolver for the todos field.
