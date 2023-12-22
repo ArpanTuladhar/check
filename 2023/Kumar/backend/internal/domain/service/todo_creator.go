@@ -22,7 +22,7 @@ func NewTodoCreator(todoCommandsGateway gateway.TodoCommandsGateway) usecase.Tod
 func (t todoCreator) CreateTodo(ctx context.Context, in *input.TodoCreator) (*output.TodoCreator, error) {
 	todo, err := t.todoCommandsGateway.CreateTodo(ctx, &todo.NewTodo{Text: "text"})
 	if err != nil {
-		return nil, errors.New("error")
+		return nil, errors.New("%w:internal_server error")
 	}
 
 	return &output.TodoCreator{ID: todo.ID, Text: todo.Text}, nil
