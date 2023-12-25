@@ -8,7 +8,8 @@ type Todo struct {
 }
 
 type NewTodo struct {
-	Text string
+	Text   string
+	UserID int32
 }
 
 func (id *TodoID) String() string {
