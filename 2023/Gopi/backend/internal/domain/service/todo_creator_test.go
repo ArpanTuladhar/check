@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -53,6 +54,21 @@ func TestCreateTodo(t *testing.T) {
 			},
 			wantErr: false,
 		},
+
+		"create message failure (gateway error)": {
+			prepare: func(f *fields) {
+				f.mockTodoCommandsGateway = &gateway.TodoCommandsGatewayMock{
+					CreateTodoFunc: func(ctx context.Context, newTodo *todo.NewTodo) (*todo.Todo, error) {
+						return nil, errors.New("this is an error")
+					},
+				}
+			},
+			args: args{
+				text: "error",
+			},
+			expected: expected{},
+			wantErr:  true,
+		},
 	}
 
 	for name, tt := range tests {
@@ -75,15 +91,15 @@ func TestCreateTodo(t *testing.T) {
 				},
 			)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("usecase.CreateTodo error %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("todoCreator.CreateTodo error %v, wantErr %v", err, tt.wantErr)
 			}
 
 			if len(f.mockTodoCommandsGateway.CreateTodoCalls()) != 1 {
-				t.Error("one creator.CreateTodo expected")
+				t.Error("Unexpected number of calls to CreateTodo. Got calls, expected 1")
 			}
 
 			if diff := cmp.Diff(out, tt.expected.todo); diff != "" {
-				t.Errorf("usecase.CreateTodo not correct: (-actual +expected):\n%s", diff)
+				t.Errorf("todoCreator.CreateTodo returns mismatch values : (-actual +expected):\n%s", diff)
 			}
 
 		})
