@@ -8,28 +8,25 @@ import (
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/domain/service"
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/handler/graph"
 	generated "github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/handler/graph/generated"
-	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/infrastructure/datastore"
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/infrastructure/todo"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 )
 
-const defaultPort = "8080"
-
 func main() {
 	// Connect to the database
-	db, err := datastore.Connect()
+	configObj := config.LoadAppConfig()
+	db, err := configObj.Connect()
 	if err != nil {
 		log.Fatal("Error connecting to the database:", err)
 	}
 	defer db.Close()
 
-	appConfig := config.LoadAppConfig()
-	port := appConfig.Port
+	port := configObj.App.Port
 
 	todoWriter := todo.NewTodoWriter()
 	todoCreator := service.NewTodoCreator(todoWriter)
-	//FIXME: create a constructor.go file in the handler module
+	// FIXME: create a constructor.go file in the handler module
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(graph.New(todoCreator)))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
