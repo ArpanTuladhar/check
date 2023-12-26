@@ -19,3 +19,22 @@
 
 ## ER Diagram
 - [ER Diagram](https://andpad-dev.esa.io/posts/10443#ER%20Database%20Diagram)
+
+
+## Configuration
+
+Before running the application, ensure that you have a configuration file (e.g., `.env`) with the required environment variables in your root directory. Here are the configuration details:
+
+- `PORT`: The port on which the application will run.
+
+- `DB_USERNAME`: The username for the database connection.
+
+- `DB_PASSWORD`: The password for the database connection.
+
+- `DB_HOST`: The host address for the database connection.
+
+- `DB_PORT`: The port number for the database connection.
+
+- `DB_NAME`: The name of the MySQL database.
+
+Make sure to set these variables in your configuration file before starting the application.
