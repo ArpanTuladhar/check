@@ -8,22 +8,33 @@ import (
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/domain/service"
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/handler/graph"
 	generated "github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/handler/graph/generated"
+	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/infrastructure/todo"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 )
 
-const defaultPort = "8080"
-
 func main() {
-	appConfig := config.LoadAppConfig()
-	port := appConfig.Port
+	// Connect to the database
+	configObj, err := config.LoadAppConfig()
+	if err != nil {
+		log.Fatalf("Error loading app configuration: %v", err)
+	}
+	db, err := configObj.Connect()
+	if err != nil {
+		log.Fatalf("Error connecting to the database: %v", err)
+	}
+	defer db.Close()
 
-	todoCreator := service.NewTodoCreator()
+	port := configObj.App.Port
+
+	todoWriter := todo.NewTodoWriter()
+	todoCreator := service.NewTodoCreator(todoWriter)
+	// FIXME: create a constructor.go file in the handler module
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(graph.New(todoCreator)))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
 
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
+	log.Printf("Connected to the database. Now, connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
