@@ -27,17 +27,18 @@ type Config struct {
 	DB  DBConfig
 }
 
-func LoadAppConfig() *Config {
+func LoadAppConfig() (*Config, error) {
 	err := godotenv.Load()
 	if err != nil {
 		log.Printf("Error loading .env file: %v", err)
+		return nil, err
 	}
 
 	c := &Config{}
 	if err := envconfig.Process("", c); err != nil {
 		log.Fatalf("Error loading configuration: %v", err)
 	}
-	return c
+	return c, err
 }
 
 func (c *Config) ConnectionString() string {

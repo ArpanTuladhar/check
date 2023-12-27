@@ -15,10 +15,13 @@ import (
 
 func main() {
 	// Connect to the database
-	configObj := config.LoadAppConfig()
+	configObj, err := config.LoadAppConfig()
+	if err != nil {
+		log.Fatalf("Error loading app configuration: %v", err)
+	}
 	db, err := configObj.Connect()
 	if err != nil {
-		log.Fatal("Error connecting to the database:", err)
+		log.Fatalf("Error connecting to the database: %v", err)
 	}
 	defer db.Close()
 
