@@ -38,7 +38,7 @@ func main() {
 	transactor := todo.NewTransactor(ownerConn)
 
 	todoWriter := todo.NewTodoWriter()
-	todoCreator := service.NewTodoCreator(conf, binder, transactor, todoWriter)
+	todoCreator := service.NewTodoCreator(binder, transactor, todoWriter)
 
 	middle := middleware.NewMiddleware()
 	router := h.NewHTTPServer(conf, middle, todoCreator)
