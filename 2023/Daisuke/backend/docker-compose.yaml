@@ -23,6 +23,11 @@ services:
       - db
     security_opt:
       - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   dbmigrator:
     build:
