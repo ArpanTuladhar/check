@@ -3,6 +3,7 @@ package integration
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"io"
 	"testing"
 
@@ -64,7 +65,7 @@ func Test_Integration_CreateTodo(t *testing.T) {
 					`,
 				},
 			},
-			expected: expected{todo: todo{Id: "todo_id_1", Text: "test", User: user{Id: "12345"}}, statusCode: 200},
+			expected: expected{todo: todo{Text: "todo_text_1", User: user{Id: "12345"}}, statusCode: 200},
 		},
 	}
 
@@ -72,13 +73,17 @@ func Test_Integration_CreateTodo(t *testing.T) {
 		tt := tt
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
+			h := InitTodoDBTestHelper(t)
 
 			body := bytes.Buffer{}
 			if err := json.NewEncoder(&body).Encode(&tt.args.q); err != nil {
 				panic(err)
 			}
 			recorder := DoGraphQLRequest(
+				h.ctx,
 				&body,
+				h.gormDB,
+				h.dbName,
 			)
 			re, err := io.ReadAll(recorder.Result().Body)
 			if err != nil {
@@ -92,7 +97,9 @@ func Test_Integration_CreateTodo(t *testing.T) {
 				t.Errorf("[integration test] Mutation { CreateTodo }v: actual statusCode = %v, expected statusCode = %v", recorder.Code, tt.expected.statusCode)
 			}
 
-			if diff := cmp.Diff(res.Data.CreateTodo, tt.expected.todo); diff != "" {
+			cmpCmpOpts := cmpopts.IgnoreFields(todo{}, "Id")
+
+			if diff := cmp.Diff(res.Data.CreateTodo, tt.expected.todo, cmpCmpOpts); diff != "" {
 				t.Errorf("[integration test] query { CreateTodo } value is mismatch (-actual +expected):\n%s", diff)
 			}
 		})
