@@ -1,6 +1,6 @@
 package gateway
 
-//go:generate moq -out mock_gateway.go . TodoCommandsGateway
+//go:generate moq -out mock_gateway.go . TodoCommandsGateway Binder Transactor
 
 import (
 	"context"
