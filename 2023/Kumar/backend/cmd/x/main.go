@@ -1,23 +1,22 @@
 package main
 
-
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
-	"context"
 
-	"github.com/julienschmidt/httprouter"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/julienschmidt/httprouter"
 
 	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/domain/service"
 	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/handler/graph"
-	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/infrastructure/todo"
 	generated "github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/handler/graph/generated"
+	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/infrastructure/todo"
 )
 
 const defaultPort = "8080"
@@ -27,7 +26,7 @@ func newRouter() *httprouter.Router {
 
 	// GraphQL playground route
 	router.GET("/", playgroundHandler())
-	
+
 	// GraphQL query route
 	router.POST("/query", graphqlHandler())
 

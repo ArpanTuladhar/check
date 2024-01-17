@@ -3,7 +3,7 @@ module github.com/88labs/andpad-engineer-training/2023/Kumar/backend
 go 1.21.5
 
 require (
-	github.com/99designs/gqlgen v0.17.41
+	github.com/99designs/gqlgen v0.17.42
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/vektah/gqlparser/v2 v2.5.10
 )
