@@ -10,11 +10,6 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-var (
-	UsernameMinLength = 2
-	PasswordMinLength = 6
-)
-
 var validate *validator.Validate
 
 type AuthService interface {
@@ -27,10 +22,10 @@ type AuthResponse struct {
 }
 
 type RegisterInput struct {
-	Email           string
-	Username        string
-	Password        string
-	ConfirmPassword string
+	Email           string `validate:"required,email"`
+	Username        string `validate:"min=2"`
+	Password        string `validate:"min=6"`
+	ConfirmPassword string `validate:"required,eqfield=Password"`
 }
 
 func init() {
@@ -45,21 +40,8 @@ func (in *RegisterInput) Sanitize() {
 }
 
 func (in RegisterInput) Validate() error {
-	if len(in.Username) < UsernameMinLength {
-		return fmt.Errorf("%w: Username not long enough, (%d) characters at least", errors.ErrValidation, UsernameMinLength)
-	}
-
-	err := validate.Var(in.Email, "required,email")
-	if err != nil {
+	if err := validate.Struct(in); err != nil {
 		return fmt.Errorf("%w: %s", errors.ErrValidation, err.Error())
 	}
-
-	if len(in.Password) < PasswordMinLength {
-		return fmt.Errorf("%w: Password not long enough, (%d) characters as least", errors.ErrValidation, PasswordMinLength)
-	}
-	if in.Password != in.ConfirmPassword {
-		return fmt.Errorf("%w: confirm password must match the password", errors.ErrValidation)
-	}
-
 	return nil
 }
