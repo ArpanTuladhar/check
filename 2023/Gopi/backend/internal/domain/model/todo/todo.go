@@ -4,7 +4,7 @@ type TodoID string
 type Todo struct {
 	ID     TodoID
 	Text   string
-	UserID int32
+	UserID int64
 }
 type NewTodo struct {
 	Text string

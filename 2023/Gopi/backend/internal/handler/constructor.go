@@ -8,7 +8,7 @@ import (
 	"github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/middleware"
 	"github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/usecase"
 	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi"
 )
 
 func NewHTTPServer(middle middleware.Middleware, todoCreator usecase.TodoCreator) http.Handler {

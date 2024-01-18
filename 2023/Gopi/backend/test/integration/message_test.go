@@ -11,6 +11,7 @@ import (
 )
 
 func Test_Integration_CreateTodo(t *testing.T) {
+
 	type query struct {
 		Query string
 	}
@@ -23,9 +24,9 @@ func Test_Integration_CreateTodo(t *testing.T) {
 	}
 
 	type todo struct {
-		Id   string `json:"id"`
-		Text string `json:"text"`
-		User user   `json:"user"`
+		Id   string      `json:"id"`
+		Text string      `json:"text"`
+		User *model.User `json:"user"`
 	}
 
 	type expected struct {
@@ -38,7 +39,6 @@ func Test_Integration_CreateTodo(t *testing.T) {
 	type createTodoResponseData struct {
 		Data createTodoResponse `json:"data"`
 	}
-
 	tests := map[string]struct {
 		args     args
 		expected expected
@@ -64,12 +64,15 @@ func Test_Integration_CreateTodo(t *testing.T) {
 					`,
 				},
 			},
+
 			expected: expected{
 				todo: &model.Todo{
 					ID:   "todo_id_1",
 					Text: "test",
-					User: user{Id: "12345"}
-				},
+					// User: &model.User{ID: "12345"}},
+					User: &model.User{
+						ID: "12345",
+					}},
 				statusCode: 200,
 			},
 		},
@@ -104,5 +107,4 @@ func Test_Integration_CreateTodo(t *testing.T) {
 			}
 		})
 	}
-
 }

@@ -8,7 +8,7 @@ import (
 type ctxKeySession struct{}
 
 type Session struct {
-	UserId int32
+	UserId int64
 }
 
 func ExtractSession(ctx context.Context) (*Session, error) {
