@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/utils/config"
 	"net"
 	"net/http"
 	"os"
@@ -16,25 +17,31 @@ import (
 	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/middleware"
 )
 
-const defaultPort = "8080"
-
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = defaultPort
+	conf, err := config.LoadConfig()
+	if err != nil {
+		panic(err)
 	}
 
-	addr := fmt.Sprintf(":%s", port)
+	addr := fmt.Sprintf(":%d", conf.ServerPort)
 	listener, err2 := net.Listen("tcp", addr)
 	if err2 != nil {
 		panic(err2)
 	}
 
+	ownerConn, cleanup, err := todo.NewOwnerSQLHandler(conf)
+	defer cleanup()
+	if err != nil {
+		panic(err)
+	}
+	binder := todo.NewConnectionBinder(ownerConn)
+	transactor := todo.NewTransactor(ownerConn)
+
 	todoWriter := todo.NewTodoWriter()
-	todoCreator := service.NewTodoCreator(todoWriter)
+	todoCreator := service.NewTodoCreator(binder, transactor, todoWriter)
 
 	middle := middleware.NewMiddleware()
-	router := h.NewHTTPServer(middle, todoCreator)
+	router := h.NewHTTPServer(conf, middle, todoCreator)
 
 	ch := make(chan error)
 	go func() {

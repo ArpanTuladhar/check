@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-
 	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/domain/gateway"
 	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/domain/model/todo"
 	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/usecase"
@@ -12,15 +11,19 @@ import (
 )
 
 type todoCreator struct {
+	dbConnBinder        gateway.Binder
+	transactor          gateway.Transactor
 	todoCommandsGateway gateway.TodoCommandsGateway
 }
 
-func NewTodoCreator(todoCommandsGateway gateway.TodoCommandsGateway) usecase.TodoCreator {
-	return &todoCreator{todoCommandsGateway}
+func NewTodoCreator(dbConnBinder gateway.Binder, transactor gateway.Transactor, todoCommandsGateway gateway.TodoCommandsGateway) usecase.TodoCreator {
+	return &todoCreator{dbConnBinder, transactor, todoCommandsGateway}
 }
 
 func (t todoCreator) CreateTodo(ctx context.Context, in *input.TodoCreator) (*output.TodoCreator, error) {
-	todo, err := t.todoCommandsGateway.CreateTodo(ctx, &todo.NewTodo{Text: "text"})
+	ctx = t.dbConnBinder.Bind(ctx)
+
+	todo, err := t.todoCommandsGateway.CreateTodo(ctx, &todo.NewTodo{Text: in.Text})
 	if err != nil {
 		return nil, errors.New("error")
 	}
