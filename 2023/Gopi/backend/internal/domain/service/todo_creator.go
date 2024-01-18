@@ -25,5 +25,5 @@ func (t todoCreator) CreateTodo(ctx context.Context, in *input.TodoCreator) (*ou
 		return nil, errors.New("internal server error")
 	}
 
-	return &output.TodoCreator{ID: todo.ID, Text: todo.Text}, nil
+	return &output.TodoCreator{ID: todo.ID, Text: todo.Text, UserID: todo.UserID}, nil
 }

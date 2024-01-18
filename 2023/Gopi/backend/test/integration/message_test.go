@@ -18,6 +18,15 @@ func Test_Integration_CreateTodo(t *testing.T) {
 	type args struct {
 		q query
 	}
+	type user struct {
+		Id string `json:"id"`
+	}
+
+	type todo struct {
+		Id   string `json:"id"`
+		Text string `json:"text"`
+		User user   `json:"user"`
+	}
 
 	type expected struct {
 		todo       *model.Todo
@@ -47,6 +56,9 @@ func Test_Integration_CreateTodo(t *testing.T) {
 							){
 								id
 								text
+								user {
+									id
+								}
 							}
 						}
 					`,
@@ -56,6 +68,7 @@ func Test_Integration_CreateTodo(t *testing.T) {
 				todo: &model.Todo{
 					ID:   "todo_id_1",
 					Text: "test",
+					User: user{Id: "12345"}
 				},
 				statusCode: 200,
 			},
