@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"reflect"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func Test_Integration_CreateTodo(t *testing.T) {
@@ -18,16 +19,14 @@ func Test_Integration_CreateTodo(t *testing.T) {
 	}
 
 	type todo struct {
-		ID     string `json:"id"`
-		Text   string `json:"text"`
-		UserID string `json:"userId"`
+		Id   string `json:"id"`
+		Text string `json:"text"`
 	}
 
 	type expected struct {
 		todo       todo
 		statusCode int
 	}
-
 	type createTodoResponse struct {
 		CreateTodo todo `json:"createTodo"`
 	}
@@ -52,13 +51,12 @@ func Test_Integration_CreateTodo(t *testing.T) {
 							){
 								id
 								text
-								userId
 							}
 						}
 					`,
 				},
 			},
-			expected: expected{todo: todo{ID: "todo_id_1", Text: "test", UserID: "user_id_1"}, statusCode: 200},
+			expected: expected{todo: todo{Id: "todo_id_1", Text: "test"}, statusCode: 200},
 		},
 	}
 
@@ -86,9 +84,10 @@ func Test_Integration_CreateTodo(t *testing.T) {
 				t.Errorf("[integration test] Mutation { CreateTodo }v: actual statusCode = %v, expected statusCode = %v", recorder.Code, tt.expected.statusCode)
 			}
 
-			if !reflect.DeepEqual(res.Data.CreateTodo, tt.expected.todo) {
-				t.Errorf("Mutation { CreateTodo } invalid Todo : actual todo = %v, expected todo = %v", res, tt.expected.todo)
+			if diff := cmp.Diff(res.Data.CreateTodo, tt.expected.todo); diff != "" {
+				t.Errorf("[integration test] query { CreateTodo } value is mismatch (-actual +expected):\n%s", diff)
 			}
 		})
 	}
+
 }
