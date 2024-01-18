@@ -15,6 +15,6 @@ func NewTodoWriter() gateway.TodoCommandsGateway {
 }
 
 func (t todoWriter) Create(ctx context.Context, newTodo *todo.NewTodo) (*todo.Todo, error) {
-	return &todo.Todo{ID: "id", Text: newTodo.Text, UserID: newTodo.UserID}, nil
+	return &todo.Todo{ID: "todo_id_1", Text: newTodo.Text, UserID: newTodo.UserID}, nil
 
 }
