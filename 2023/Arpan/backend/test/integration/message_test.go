@@ -19,13 +19,13 @@ func Test_Integration_CreateTodo(t *testing.T) {
 	}
 
 	type todo struct {
-		Id   string `json:"id"`
+		ID   string `json:"id"`
 		Text string `json:"text"`
 	}
 
 	type expected struct {
-		todo       todo
-		statusCode int
+		Todo       todo
+		StatusCode int
 	}
 	type createTodoResponse struct {
 		CreateTodo todo `json:"createTodo"`
@@ -35,11 +35,11 @@ func Test_Integration_CreateTodo(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		args     args
-		expected expected
+		Args     args
+		Expected expected
 	}{
 		"create todo success": {
-			args: args{
+			Args: args{
 				q: query{
 					Query: `
 						mutation {
@@ -56,7 +56,7 @@ func Test_Integration_CreateTodo(t *testing.T) {
 					`,
 				},
 			},
-			expected: expected{todo: todo{Id: "todo_id_1", Text: "test"}, statusCode: 200},
+			Expected: expected{Todo: todo{ID: "todo_id_1", Text: "todo_text_1"}, StatusCode: 200},
 		},
 	}
 
@@ -66,7 +66,7 @@ func Test_Integration_CreateTodo(t *testing.T) {
 			t.Parallel()
 
 			body := bytes.Buffer{}
-			if err := json.NewEncoder(&body).Encode(&tt.args.q); err != nil {
+			if err := json.NewEncoder(&body).Encode(&tt.Args.q); err != nil {
 				panic(err)
 			}
 			recorder := DoGraphQLRequest(
@@ -80,14 +80,13 @@ func Test_Integration_CreateTodo(t *testing.T) {
 			res := createTodoResponseData{}
 			json.Unmarshal(re, &res)
 
-			if recorder.Code != tt.expected.statusCode {
-				t.Errorf("[integration test] Mutation { CreateTodo }v: actual statusCode = %v, expected statusCode = %v", recorder.Code, tt.expected.statusCode)
+			if recorder.Code != tt.Expected.StatusCode {
+				t.Errorf("[integration test] Mutation { CreateTodo }: actual statusCode = %v, expected statusCode = %v", recorder.Code, tt.Expected.StatusCode)
 			}
 
-			if diff := cmp.Diff(res.Data.CreateTodo, tt.expected.todo); diff != "" {
+			if diff := cmp.Diff(res.Data.CreateTodo, tt.Expected.Todo); diff != "" {
 				t.Errorf("[integration test] query { CreateTodo } value is mismatch (-actual +expected):\n%s", diff)
 			}
 		})
 	}
-
 }
