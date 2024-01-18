@@ -2,86 +2,72 @@ package main
 
 import (
 	"context"
-	"log"
+	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/julienschmidt/httprouter"
-
 	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/domain/service"
-	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/handler/graph"
-	generated "github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/handler/graph/generated"
+	h "github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/handler"
 	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/infrastructure/todo"
 )
 
 const defaultPort = "8080"
-
-func newRouter() *httprouter.Router {
-	router := httprouter.New()
-
-	// GraphQL playground route
-	router.GET("/", playgroundHandler())
-
-	// GraphQL query route
-	router.POST("/query", graphqlHandler())
-
-	return router
-}
-
-func playgroundHandler() httprouter.Handle {
-	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-		playground.Handler("GraphQL playground", "/query").ServeHTTP(w, r)
-	}
-}
-
-func graphqlHandler() httprouter.Handle {
-	todoWriter := todo.NewTodoWriter()
-	todoCreator := service.NewTodoCreator(todoWriter)
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(graph.New(todoCreator)))
-
-	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-		srv.ServeHTTP(w, r)
-	}
-}
 
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = defaultPort
 	}
+	addr := fmt.Sprintf(":%s", port)
 
-	router := newRouter()
+	todoWriter := todo.NewTodoWriter()
+	todoCreator := service.NewTodoCreator(todoWriter)
+	router := h.NewHTTPServer(todoCreator)
 
-	server := &http.Server{
-		Addr:    ":" + port,
-		Handler: router,
+	listener, err := net.Listen("tcp", addr)
+	if err != nil {
+		panic(err)
 	}
+	defer listener.Close()
 
-	signalCh := make(chan os.Signal, 1)
-	signal.Notify(signalCh, syscall.SIGINT, syscall.SIGTERM)
-
-	go func() {
-		log.Printf("Server listening on http://localhost:%s\n", port)
-		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
-		}
-	}()
-
-	sig := <-signalCh
-	log.Printf("Received signal: %v\n", sig)
-
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	if err := server.Shutdown(ctx); err != nil {
-		log.Fatalf("Server shutdown failed: %v\n", err)
-		return
+	signalCh := make(chan os.Signal, 1)
+	signal.Notify(signalCh, os.Interrupt, syscall.SIGTERM)
+
+	srv := &http.Server{
+		Handler:      router,
+		ReadTimeout:  15 * time.Second,
+		WriteTimeout: 30 * time.Second,
+		IdleTimeout:  30 * time.Second,
 	}
 
-	log.Println("Server shutdown gracefully")
+	go func() {
+		fmt.Println("Starting todo server on", addr)
+		if err := srv.Serve(listener); err != http.ErrServerClosed {
+			fmt.Println("Server error:", err)
+		}
+		cancel()
+	}()
+
+	select {
+	case sig := <-signalCh:
+		fmt.Println("Received signal:", sig)
+	case <-ctx.Done():
+	}
+
+	// Shutdown the server gracefully
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer shutdownCancel()
+
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		fmt.Println("Server shutdown error:", err)
+	} else {
+		fmt.Println("Server shutdown gracefully")
+	}
 }

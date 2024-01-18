@@ -7,7 +7,6 @@ package graph
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	graph "github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/handler/graph/generated"
 	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/handler/graph/model"
@@ -20,20 +19,20 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 	if err != nil {
 		return nil, errors.New("error")
 	}
-
 	return &model.Todo{ID: todo.ID.String(), Text: todo.Text}, nil
 }
 
-// Todos is the resolver for the todos field.
-func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: Todos - todos"))
+func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) { //sample todo
+
+	todos := []*model.Todo{
+		{ID: "1", Text: "Buy groceries", User: &model.User{ID: "user123", Name: "John"}},
+		{ID: "2", Text: "Complete homework", User: &model.User{ID: "user456", Name: "Jane"}},
+	}
+	return todos, nil
 }
 
-// Mutation returns graph.MutationResolver implementation.
 func (r *Resolver) Mutation() graph.MutationResolver { return &mutationResolver{r} }
-
-// Query returns graph.QueryResolver implementation.
-func (r *Resolver) Query() graph.QueryResolver { return &queryResolver{r} }
+func (r *Resolver) Query() graph.QueryResolver       { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
