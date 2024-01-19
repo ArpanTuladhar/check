@@ -438,7 +438,7 @@ func (ec *executionContext) _Query_todos(ctx context.Context, field graphql.Coll
 	})
 	if err != nil {
 		ec.Error(ctx, err)
-		
+
 		return graphql.Null
 	}
 	if resTmp == nil {
