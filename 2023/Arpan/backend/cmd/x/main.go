@@ -57,8 +57,6 @@ func main() {
 		}
 	}()
 
-	fmt.Printf("Server started on http://localhost:%s\n", port)
-
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
 	ctx, cancel := context.WithCancel(context.Background())
