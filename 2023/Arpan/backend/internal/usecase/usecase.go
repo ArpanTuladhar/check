@@ -1,5 +1,7 @@
 package usecase
 
+//go:generate moq -out mock_usecase.go . TodoCreator
+
 import (
 	"context"
 

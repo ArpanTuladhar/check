@@ -1,5 +1,7 @@
 package gateway
 
+//go:generate moq -out mock_gateway.go . TodoCommandsGateway
+
 import (
 	"context"
 
