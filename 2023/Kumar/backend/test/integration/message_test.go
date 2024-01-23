@@ -67,25 +67,27 @@ func Test_Integration_CreateTodo(t *testing.T) {
 
 			body := bytes.Buffer{}
 			if err := json.NewEncoder(&body).Encode(&tt.args.q); err != nil {
-				panic(err)
+				t.Fatalf("Error encoding JSON: %v", err)
 			}
 			recorder := DoGraphQLRequest(
 				&body,
 			)
 			re, err := io.ReadAll(recorder.Result().Body)
 			if err != nil {
-				panic(err)
+				t.Fatalf("Error reading response body: %v", err)
 			}
 
 			res := createTodoResponseData{}
-			json.Unmarshal(re, &res)
+			if err := json.Unmarshal(re, &res); err != nil {
+				t.Fatalf("Error in Unmarshalling JSON:%v", err)
+			}
 
 			if recorder.Code != tt.expected.statusCode {
 				t.Errorf("[integration test] Mutation { CreateTodo }v: actual statusCode = %v, expected statusCode = %v", recorder.Code, tt.expected.statusCode)
 			}
 
 			if diff := cmp.Diff(res.Data.CreateTodo, tt.expected.todo); diff != "" {
-				t.Errorf("[integration test] query { CreateTodo } value is mismatch (-actual +expected):\n%s", diff)
+				t.Errorf("[integration test] Mutation { CreateTodo } value is mismatch (-actual +expected):\n%s", diff)
 			}
 		})
 	}
