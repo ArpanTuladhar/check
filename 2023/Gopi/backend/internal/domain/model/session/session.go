@@ -16,9 +16,9 @@ func ExtractSession(ctx context.Context) (*Session, error) {
 	if ok {
 		return s, nil
 	}
-	return nil, errors.New("auth error!!")
+	return nil, errors.New("auth error")
 }
 
-func StoreSession(ctx context.Context, session *Session) context.Context {
+func WithSession(ctx context.Context, session *Session) context.Context {
 	return context.WithValue(ctx, &ctxKeySession{}, session)
 }

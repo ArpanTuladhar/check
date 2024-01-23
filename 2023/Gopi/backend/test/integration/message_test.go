@@ -69,7 +69,6 @@ func Test_Integration_CreateTodo(t *testing.T) {
 				todo: &model.Todo{
 					ID:   "todo_id_1",
 					Text: "test",
-					// User: &model.User{ID: "12345"}},
 					User: &model.User{
 						ID: "12345",
 					}},

@@ -11,7 +11,7 @@ func (m middleware) WithAuth() func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			//TODO: confirm session
 			s := session.Session{UserId: 12345}
-			ctx := session.StoreSession(r.Context(), &s)
+			ctx := session.WithSession(r.Context(), &s)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
