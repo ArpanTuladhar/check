@@ -9,6 +9,7 @@ import (
 	"github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/domain/service"
 	"github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/handler"
 	"github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/infrastructure/todo"
+	"github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/middleware"
 )
 
 func DoGraphQLRequest(
@@ -30,8 +31,9 @@ func DoGraphQLRequest(
 }
 
 func initHttpServerForIntegrationTest(ctx context.Context) http.Handler {
+	middle := middleware.NewMiddleware()
 	todoWriter := todo.NewTodoWriter()
 	todoCreator := service.NewTodoCreator(todoWriter)
-	handler := handler.NewHTTPServer(todoCreator)
+	handler := handler.NewHTTPServer(middle, todoCreator)
 	return handler
 }

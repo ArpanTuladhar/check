@@ -4,7 +4,7 @@ go 1.21.4
 
 require (
 	github.com/99designs/gqlgen v0.17.41
-	github.com/go-chi/chi/v5 v5.0.10
+	github.com/go-chi/chi v1.5.5
 	github.com/google/go-cmp v0.6.0
 	github.com/vektah/gqlparser/v2 v2.5.10
 )

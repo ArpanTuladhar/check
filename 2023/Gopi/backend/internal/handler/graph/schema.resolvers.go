@@ -9,6 +9,8 @@ import (
 	"errors"
 	"fmt"
 
+	"strconv"
+
 	graph "github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/handler/graph/generated"
 	"github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/handler/graph/model"
 	usecase_input "github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/usecase/input"
@@ -21,7 +23,7 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 		return nil, errors.New("error")
 	}
 
-	return &model.Todo{ID: todo.ID.String(), Text: todo.Text}, nil
+	return &model.Todo{ID: todo.ID.String(), Text: todo.Text, User: &model.User{ID: strconv.Itoa((int)(todo.UserID))}}, nil
 }
 
 // Todos is the resolver for the todos field.

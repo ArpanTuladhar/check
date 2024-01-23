@@ -13,6 +13,7 @@ import (
 	"github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/domain/service"
 	h "github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/handler"
 	"github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/infrastructure/todo"
+	"github.com/88labs/andpad-engineer-training/2023/Gopi/backend/internal/middleware"
 )
 
 const defaultPort = "8080"
@@ -31,7 +32,8 @@ func main() {
 
 	todoWriter := todo.NewTodoWriter()
 	todoCreator := service.NewTodoCreator(todoWriter)
-	router := h.NewHTTPServer(todoCreator)
+	middle := middleware.NewMiddleware()
+	router := h.NewHTTPServer(middle, todoCreator)
 
 	ch := make(chan error)
 	go func() {

@@ -2,8 +2,9 @@ package todo
 
 type TodoID string
 type Todo struct {
-	ID   TodoID
-	Text string
+	ID     TodoID
+	Text   string
+	UserID int64
 }
 type NewTodo struct {
 	Text string
