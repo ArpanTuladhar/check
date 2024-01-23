@@ -4,7 +4,8 @@ go 1.21.5
 
 require (
 	github.com/99designs/gqlgen v0.17.42
-	github.com/julienschmidt/httprouter v1.3.0
+	github.com/go-chi/chi/v5 v5.0.11
+	github.com/google/go-cmp v0.6.0
 	github.com/vektah/gqlparser/v2 v2.5.10
 )
 
