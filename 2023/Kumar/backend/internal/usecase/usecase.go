@@ -1,8 +1,10 @@
 package usecase
 
+//go:generate moq -out mock_usecase.go . TodoCreator
+
 import (
 	"context"
-	
+
 	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/usecase/input"
 	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/usecase/output"
 )
