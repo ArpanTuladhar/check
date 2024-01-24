@@ -5,11 +5,12 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+
 	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/domain/gateway"
 	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/domain/model/todo"
 	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/usecase/input"
 	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/usecase/output"
-	"github.com/google/go-cmp/cmp"
 )
 
 func TestCreateTodo(t *testing.T) {
@@ -31,7 +32,7 @@ func TestCreateTodo(t *testing.T) {
 		expected expected
 		wantErr  bool
 	}{
-		"create message success": {
+		"create todo success": {
 			prepare: func(f *fields) {
 				f.mockTodoCommandsGateway = &gateway.TodoCommandsGatewayMock{
 					CreateFunc: func(ctx context.Context, newTodo *todo.NewTodo) (*todo.Todo, error) {
@@ -53,7 +54,7 @@ func TestCreateTodo(t *testing.T) {
 			},
 			wantErr: false,
 		},
-		"create message failure (gateway error)": {
+		"create todo failure (gateway error)": {
 			prepare: func(f *fields) {
 				f.mockTodoCommandsGateway = &gateway.TodoCommandsGatewayMock{
 					CreateFunc: func(ctx context.Context, newTodo *todo.NewTodo) (*todo.Todo, error) {
