@@ -16,7 +16,7 @@ func ExtractSession(ctx context.Context) (*Session, error) {
 	if ok {
 		return s, nil
 	}
-	return nil, errors.New("auth error")
+	return nil, errors.New("session not found")
 }
 
 func StoreSession(ctx context.Context, session *Session) context.Context {
