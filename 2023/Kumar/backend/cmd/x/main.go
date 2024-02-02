@@ -13,6 +13,7 @@ import (
 	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/domain/service"
 	h "github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/handler"
 	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/infrastructure/todo"
+	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/middleware"
 )
 
 const defaultPort = "8080"
@@ -26,7 +27,9 @@ func main() {
 
 	todoWriter := todo.NewTodoWriter()
 	todoCreator := service.NewTodoCreator(todoWriter)
-	router := h.NewHTTPServer(todoCreator)
+
+	middle := middleware.NewMiddleware()
+	router := h.NewHTTPServer(middle, todoCreator)
 
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
