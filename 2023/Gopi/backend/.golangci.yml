@@ -1,0 +1,55 @@
+---
+linters-settings:
+  funlen:
+    lines: 500
+    statements: 100
+
+linters:
+  disable-all: true
+  # Enabling all of them is too strict, so only codes that are likely to cause problems should be detected.
+  # Enable only default, bugs, complexity, performance linters.
+  enable:
+    ## Default
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - typecheck
+    - unused
+    ## bugs
+    - asasalint
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - contextcheck
+    - durationcheck
+    - errchkjson
+    - errorlint
+    - exhaustive
+    - exportloopref
+    - gosec
+    - loggercheck
+    - makezero
+    - nilerr
+    - noctx
+    - reassign
+    - rowserrcheck
+    - sqlclosecheck
+    ## complexity
+    - cyclop
+    - funlen
+    - gocognit
+    - gocyclo
+    - maintidx
+    - nestif
+    ## Performance
+    - prealloc
+
+run:
+  tests: false
+  allow-parallel-runners: true
+  timeout: 5m
+  skip-files:
+    - "wire_gen.go"
+

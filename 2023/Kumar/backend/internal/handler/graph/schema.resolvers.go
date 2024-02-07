@@ -7,6 +7,7 @@ package graph
 import (
 	"context"
 	"errors"
+	"strconv"
 
 	graph "github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/handler/graph/generated"
 	"github.com/88labs/andpad-engineer-training/2023/Kumar/backend/internal/handler/graph/model"
@@ -19,14 +20,14 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 	if err != nil {
 		return nil, errors.New("error")
 	}
-	return &model.Todo{ID: todo.ID.String(), Text: todo.Text}, nil
+	return &model.Todo{ID: todo.ID.String(), Text: todo.Text, User: &model.User{ID: strconv.Itoa((int)(todo.UserID))}}, nil
 }
 
 func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) { //sample todo
 
 	todos := []*model.Todo{
-		{ID: "1", Text: "Buy groceries", User: &model.User{ID: "user123", Name: "John"}},
-		{ID: "2", Text: "Complete homework", User: &model.User{ID: "user456", Name: "Jane"}},
+		{ID: "1", Text: "Buy groceries", User: &model.User{ID: "user123"}},
+		{ID: "2", Text: "Complete homework", User: &model.User{ID: "user456"}},
 	}
 	return todos, nil
 }

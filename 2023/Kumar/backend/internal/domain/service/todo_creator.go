@@ -25,5 +25,5 @@ func (t todoCreator) CreateTodo(ctx context.Context, in *input.TodoCreator) (*ou
 		return nil, fmt.Errorf("create todo failed: %w", err)
 	}
 
-	return &output.TodoCreator{ID: todo.ID, Text: todo.Text}, nil
+	return &output.TodoCreator{ID: todo.ID, Text: todo.Text, UserID: todo.UserID}, nil
 }
