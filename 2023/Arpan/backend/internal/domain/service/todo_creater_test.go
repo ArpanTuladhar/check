@@ -36,8 +36,9 @@ func TestCreateTodo(t *testing.T) {
 				f.mockTodoCommandsGateway = &gateway.TodoCommandsGatewayMock{
 					CreateFunc: func(ctx context.Context, newTodo *todo.NewTodo) (*todo.Todo, error) {
 						return &todo.Todo{
-							ID:   "todo_id_1",
-							Text: "todo_text_1",
+							ID:     "todo_id_1",
+							Text:   "todo_text_1",
+							UserID: 12345,
 						}, nil
 					},
 				}
@@ -47,8 +48,9 @@ func TestCreateTodo(t *testing.T) {
 			},
 			expected: expected{
 				todo: &output.TodoCreator{
-					ID:   "todo_id_1",
-					Text: "todo_text_1",
+					ID:     "todo_id_1",
+					Text:   "todo_text_1",
+					UserID: 12345,
 				},
 			},
 			wantErr: false,

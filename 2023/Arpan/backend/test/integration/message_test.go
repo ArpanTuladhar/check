@@ -18,9 +18,14 @@ func Test_Integration_CreateTodo(t *testing.T) {
 		q query
 	}
 
+	type user struct {
+		Id string `json:"id"`
+	}
+
 	type todo struct {
 		ID   string `json:"id"`
 		Text string `json:"text"`
+		User user   `json:"user"`
 	}
 
 	type expected struct {
@@ -51,12 +56,15 @@ func Test_Integration_CreateTodo(t *testing.T) {
 							){
 								id
 								text
+								user {
+									id
+								}
 							}
 						}
 					`,
 				},
 			},
-			Expected: expected{Todo: todo{ID: "todo_id_1", Text: "todo_text_1"}, StatusCode: 200},
+			Expected: expected{Todo: todo{ID: "todo_id_1", Text: "todo_text_1", User: user{Id: "12345"}}, StatusCode: 200},
 		},
 	}
 

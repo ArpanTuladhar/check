@@ -7,20 +7,22 @@ require (
 	github.com/vektah/gqlparser/v2 v2.5.10
 )
 
-require github.com/go-sql-driver/mysql v1.7.1
+require (
+	github.com/go-chi/chi/v5 v5.0.11
+	github.com/go-sql-driver/mysql v1.7.1
+	github.com/google/go-cmp v0.6.0
+)
 
 require (
-	github.com/go-chi/chi/v5 v5.0.11 // indirect
-	github.com/google/go-cmp v0.6.0 // indirect
-	github.com/matryer/moq v0.3.3 // indirect
-	golang.org/x/mod v0.14.0 // indirect
-	golang.org/x/sys v0.16.0 // indirect
-	golang.org/x/tools v0.17.0 // indirect
+	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
+	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
+	github.com/stretchr/testify v1.8.4 // indirect
+	golang.org/x/net v0.20.0 // indirect
 )
 
 require (
 	github.com/agnivade/levenshtein v1.1.1 // indirect
-	github.com/google/uuid v1.3.0 // indirect
+	github.com/google/uuid v1.4.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.3 // indirect
 	github.com/joho/godotenv v1.5.1
