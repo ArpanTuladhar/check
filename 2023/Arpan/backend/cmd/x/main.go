@@ -15,6 +15,7 @@ import (
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/domain/service"
 	h "github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/handler"
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/infrastructure/todo"
+	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/middleware"
 )
 
 func main() {
@@ -34,7 +35,9 @@ func main() {
 
 	todoWriter := todo.NewTodoWriter()
 	todoCreator := service.NewTodoCreator(todoWriter)
-	router := h.NewHTTPServer(todoCreator)
+
+	middle := middleware.NewMiddleware()
+	router := h.NewHTTPServer(middle, todoCreator)
 
 	addr := fmt.Sprintf(":%s", port)
 	listener, err := net.Listen("tcp", addr)

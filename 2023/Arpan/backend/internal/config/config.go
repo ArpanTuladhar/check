@@ -28,6 +28,7 @@ type Config struct {
 }
 
 func LoadAppConfig() (*Config, error) {
+	// Load environment variables from the current directory
 	err := godotenv.Load()
 	if err != nil {
 		log.Printf("Error loading .env file: %v", err)
