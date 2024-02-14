@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/domain/gateway"
-	"github.com/88labs/andpad-engineer-training/2023/Daisuke/backend/internal/utils/config"
+	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/domain/gateway"
+	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/utils/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )

@@ -9,6 +9,7 @@ import (
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/domain/model/todo"
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/usecase/input"
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/usecase/output"
+	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/utils/config"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -84,7 +85,7 @@ func TestCreateTodo(t *testing.T) {
 			if tt.prepare != nil {
 				tt.prepare(&f)
 			}
-			creator := NewTodoCreator(f.mockTodoCommandsGateway)
+			creator := NewTodoCreator(*config.Config, gateway.Binder, gateway.Transactor, gateway.TodoCommandsGateway)
 			out, err := creator.CreateTodo(
 				context.Background(),
 				&input.TodoCreator{
