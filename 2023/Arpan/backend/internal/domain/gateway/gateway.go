@@ -8,6 +8,14 @@ import (
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/domain/model/todo"
 )
 
+type Binder interface {
+	Bind(context.Context) context.Context
+}
+
+type Transactor interface {
+	Transaction(context.Context, func(context.Context) error) error
+}
+
 type TodoCommandsGateway interface {
 	Create(
 		ctx context.Context,
