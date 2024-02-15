@@ -12,7 +12,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestCreateTodo(t *testing.T) {
+func TestCreate(t *testing.T) {
 	type fields struct {
 		ctx                     context.Context
 		mockTodoCommandsGateway *gateway.TodoCommandsGatewayMock
@@ -94,11 +94,21 @@ func TestCreateTodo(t *testing.T) {
 
 			f := fields{
 				mockTodoCommandsGateway: nil,
+				mockBinder:              nil,
 			}
 
 			if tt.prepare != nil {
 				tt.prepare(&f)
 			}
+
+			if f.mockBinder == nil {
+				f.mockBinder = &gateway.BinderMock{
+					BindFunc: func(contextMoqParam context.Context) context.Context {
+						return f.ctx
+					},
+				}
+			}
+
 			creator := NewTodoCreator(f.mockBinder, f.mockTransactor, f.mockTodoCommandsGateway)
 			out, err := creator.CreateTodo(
 				context.Background(),

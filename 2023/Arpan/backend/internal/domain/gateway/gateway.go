@@ -14,7 +14,7 @@ type Transactor interface {
 	Transaction(context.Context, func(context.Context) error) error
 }
 type TodoCommandsGateway interface {
-	CreateTodo(
+	Create(
 		ctx context.Context,
 		newTodo *todo.NewTodo,
 	) (*todo.Todo, error)
