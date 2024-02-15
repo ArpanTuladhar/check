@@ -9,18 +9,16 @@ import (
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/usecase"
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/usecase/input"
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/usecase/output"
-	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/utils/config"
 )
 
 type todoCreator struct {
-	conf                *config.Config
 	dbConnBinder        gateway.Binder
 	transactor          gateway.Transactor
 	todoCommandsGateway gateway.TodoCommandsGateway
 }
 
-func NewTodoCreator(conf *config.Config, dbConnBinder gateway.Binder, transactor gateway.Transactor, todoCommandsGateway gateway.TodoCommandsGateway) usecase.TodoCreator {
-	return &todoCreator{conf, dbConnBinder, transactor, todoCommandsGateway}
+func NewTodoCreator(dbConnBinder gateway.Binder, transactor gateway.Transactor, todoCommandsGateway gateway.TodoCommandsGateway) usecase.TodoCreator {
+	return &todoCreator{dbConnBinder, transactor, todoCommandsGateway}
 }
 
 func (t todoCreator) CreateTodo(ctx context.Context, in *input.TodoCreator) (*output.TodoCreator, error) {
