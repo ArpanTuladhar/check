@@ -7,7 +7,12 @@ generate:
 .PHONY: test
 test:
 	go test ./...
+	
+.PHONY: setup_db
+setup_db:
+	docker compose up -d database --wait
 
+.PHONY: lint
 lint:
 	golangci-lint run
 

@@ -40,6 +40,9 @@ jobs:
       - name: Lint
         run: make lint
         working-directory: 2023/Arpan/backend
+      - name: Setup DB
+        run: make setup_db
+        working-directory: 2023/Arpan/backend
       - name: Test
         run: make test
         working-directory: 2023/Arpan/backend
