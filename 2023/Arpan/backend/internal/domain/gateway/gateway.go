@@ -1,7 +1,6 @@
 package gateway
 
-//go:generate moq -out mock_gateway.go . TodoCommandsGateway
-
+//go:generate moq -out mock_gateway.go . TodoCommandsGateway Binder Transactor
 import (
 	"context"
 
@@ -11,13 +10,11 @@ import (
 type Binder interface {
 	Bind(context.Context) context.Context
 }
-
 type Transactor interface {
 	Transaction(context.Context, func(context.Context) error) error
 }
-
 type TodoCommandsGateway interface {
-	Create(
+	CreateTodo(
 		ctx context.Context,
 		newTodo *todo.NewTodo,
 	) (*todo.Todo, error)
