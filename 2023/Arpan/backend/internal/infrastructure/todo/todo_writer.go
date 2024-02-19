@@ -18,7 +18,7 @@ func NewTodoWriter() gateway.TodoCommandsGateway {
 	return &todoWriter{}
 }
 
-func (t todoWriter) Create(ctx context.Context, newTodo *todo.NewTodo) (*todo.Todo, error) {
+func (t todoWriter) CreateTodo(ctx context.Context, newTodo *todo.NewTodo) (*todo.Todo, error) {
 	s, err := session.ExtractSession(ctx)
 	if err != nil {
 		return nil, errors.New("failed to fetch a session")

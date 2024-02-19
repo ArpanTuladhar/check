@@ -12,7 +12,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestCreate(t *testing.T) {
+func TestCreateTodo(t *testing.T) {
 	type fields struct {
 		ctx                     context.Context
 		mockTodoCommandsGateway *gateway.TodoCommandsGatewayMock
@@ -37,7 +37,7 @@ func TestCreate(t *testing.T) {
 		"create message success": {
 			prepare: func(f *fields) {
 				f.mockTodoCommandsGateway = &gateway.TodoCommandsGatewayMock{
-					CreateFunc: func(ctx context.Context, newTodo *todo.NewTodo) (*todo.Todo, error) {
+					CreateTodoFunc: func(ctx context.Context, newTodo *todo.NewTodo) (*todo.Todo, error) {
 						return &todo.Todo{
 							ID:     "todo_id_1",
 							Text:   "todo_text_1",
@@ -74,7 +74,7 @@ func TestCreate(t *testing.T) {
 		"create message failure (gateway error)": {
 			prepare: func(f *fields) {
 				f.mockTodoCommandsGateway = &gateway.TodoCommandsGatewayMock{
-					CreateFunc: func(ctx context.Context, newTodo *todo.NewTodo) (*todo.Todo, error) {
+					CreateTodoFunc: func(ctx context.Context, newTodo *todo.NewTodo) (*todo.Todo, error) {
 						return nil, errors.New("this is an error")
 					},
 				}
@@ -120,7 +120,7 @@ func TestCreate(t *testing.T) {
 				t.Errorf("usecase.CreateTodo error %v, wantErr %v", err, tt.wantErr)
 			}
 
-			if len(f.mockTodoCommandsGateway.CreateCalls()) != 1 {
+			if len(f.mockTodoCommandsGateway.CreateTodoCalls()) != 1 {
 				t.Error("one creator.CreateTodo expected")
 			}
 
