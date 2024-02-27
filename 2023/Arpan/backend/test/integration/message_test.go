@@ -11,7 +11,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func Test_Integration_Create(t *testing.T) {
+func Test_Integration_CreateTodo(t *testing.T) {
 	type query struct {
 		Query string
 	}
