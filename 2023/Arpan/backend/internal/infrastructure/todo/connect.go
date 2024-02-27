@@ -16,7 +16,7 @@ type TodoConn struct {
 	GormDB *gorm.DB
 }
 
-func NewOwnerSQLHandler(conf *config.Config) (*TodoConn, func(), error) {
+func NewTodoSQLHandler(conf *config.Config) (*TodoConn, func(), error) {
 	dsn := fmt.Sprintf(
 		"%s:%s@tcp(%s:%d)/%s?parseTime=true&loc=%s",
 		conf.DBUser,

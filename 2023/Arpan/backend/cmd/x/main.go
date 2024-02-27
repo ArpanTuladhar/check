@@ -30,7 +30,7 @@ func main() {
 		log.Fatalf("Error starting listener: %v", err2)
 	}
 
-	ownerConn, cleanup, err := todo.NewOwnerSQLHandler(conf)
+	ownerConn, cleanup, err := todo.NewTodoSQLHandler(conf)
 	defer cleanup()
 	if err != nil {
 		panic(err)
