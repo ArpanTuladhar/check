@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"net/url"
 
 	"github.com/kelseyhightower/envconfig"
 )
@@ -13,6 +14,18 @@ const (
 	EnvStaging    Env = "staging"
 	EnvLocal      Env = "local"
 )
+
+func ConstructDSN(conf *Config) string {
+	return fmt.Sprintf(
+		"%s:%s@tcp(%s:%d)/%s?parseTime=true&loc=%s",
+		conf.DBUser,
+		conf.DBPass,
+		conf.DBHost,
+		conf.DBPort,
+		conf.DBName,
+		url.QueryEscape(conf.DBLoc),
+	)
+}
 
 type Config struct {
 	Env        Env    `required:"true" default:"local"`

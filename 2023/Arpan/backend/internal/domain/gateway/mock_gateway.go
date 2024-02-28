@@ -19,8 +19,8 @@ var _ TodoCommandsGateway = &TodoCommandsGatewayMock{}
 //
 //		// make and configure a mocked TodoCommandsGateway
 //		mockedTodoCommandsGateway := &TodoCommandsGatewayMock{
-//			CreateTodoFunc: func(ctx context.Context, newTodo *todo.NewTodo) (*todo.Todo, error) {
-//				panic("mock out the CreateTodo method")
+//			CreateFunc: func(ctx context.Context, newTodo *todo.NewTodo) (*todo.Todo, error) {
+//				panic("mock out the Create method")
 //			},
 //		}
 //
@@ -29,26 +29,26 @@ var _ TodoCommandsGateway = &TodoCommandsGatewayMock{}
 //
 //	}
 type TodoCommandsGatewayMock struct {
-	// CreateTodoFunc mocks the CreateTodo method.
-	CreateTodoFunc func(ctx context.Context, newTodo *todo.NewTodo) (*todo.Todo, error)
+	// CreateFunc mocks the Create method.
+	CreateFunc func(ctx context.Context, newTodo *todo.NewTodo) (*todo.Todo, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
-		// CreateTodo holds details about calls to the CreateTodo method.
-		CreateTodo []struct {
+		// Create holds details about calls to the Create method.
+		Create []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// NewTodo is the newTodo argument value.
 			NewTodo *todo.NewTodo
 		}
 	}
-	lockCreateTodo sync.RWMutex
+	lockCreate sync.RWMutex
 }
 
-// CreateTodo calls CreateTodoFunc.
-func (mock *TodoCommandsGatewayMock) CreateTodo(ctx context.Context, newTodo *todo.NewTodo) (*todo.Todo, error) {
-	if mock.CreateTodoFunc == nil {
-		panic("TodoCommandsGatewayMock.CreateTodoFunc: method is nil but TodoCommandsGateway.CreateTodo was just called")
+// Create calls CreateFunc.
+func (mock *TodoCommandsGatewayMock) Create(ctx context.Context, newTodo *todo.NewTodo) (*todo.Todo, error) {
+	if mock.CreateFunc == nil {
+		panic("TodoCommandsGatewayMock.CreateFunc: method is nil but TodoCommandsGateway.Create was just called")
 	}
 	callInfo := struct {
 		Ctx     context.Context
@@ -57,17 +57,17 @@ func (mock *TodoCommandsGatewayMock) CreateTodo(ctx context.Context, newTodo *to
 		Ctx:     ctx,
 		NewTodo: newTodo,
 	}
-	mock.lockCreateTodo.Lock()
-	mock.calls.CreateTodo = append(mock.calls.CreateTodo, callInfo)
-	mock.lockCreateTodo.Unlock()
-	return mock.CreateTodoFunc(ctx, newTodo)
+	mock.lockCreate.Lock()
+	mock.calls.Create = append(mock.calls.Create, callInfo)
+	mock.lockCreate.Unlock()
+	return mock.CreateFunc(ctx, newTodo)
 }
 
-// CreateTodoCalls gets all the calls that were made to CreateTodo.
+// CreateCalls gets all the calls that were made to Create.
 // Check the length with:
 //
-//	len(mockedTodoCommandsGateway.CreateTodoCalls())
-func (mock *TodoCommandsGatewayMock) CreateTodoCalls() []struct {
+//	len(mockedTodoCommandsGateway.CreateCalls())
+func (mock *TodoCommandsGatewayMock) CreateCalls() []struct {
 	Ctx     context.Context
 	NewTodo *todo.NewTodo
 } {
@@ -75,9 +75,9 @@ func (mock *TodoCommandsGatewayMock) CreateTodoCalls() []struct {
 		Ctx     context.Context
 		NewTodo *todo.NewTodo
 	}
-	mock.lockCreateTodo.RLock()
-	calls = mock.calls.CreateTodo
-	mock.lockCreateTodo.RUnlock()
+	mock.lockCreate.RLock()
+	calls = mock.calls.Create
+	mock.lockCreate.RUnlock()
 	return calls
 }
 

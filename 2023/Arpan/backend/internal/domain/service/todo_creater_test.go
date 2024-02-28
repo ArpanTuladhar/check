@@ -17,7 +17,6 @@ func TestCreateTodo(t *testing.T) {
 		ctx                     context.Context
 		mockTodoCommandsGateway *gateway.TodoCommandsGatewayMock
 		mockBinder              *gateway.BinderMock
-		mockTransactor          *gateway.TransactorMock
 	}
 
 	type args struct {
@@ -37,7 +36,7 @@ func TestCreateTodo(t *testing.T) {
 		"create message success": {
 			prepare: func(f *fields) {
 				f.mockTodoCommandsGateway = &gateway.TodoCommandsGatewayMock{
-					CreateTodoFunc: func(ctx context.Context, newTodo *todo.NewTodo) (*todo.Todo, error) {
+					CreateFunc: func(ctx context.Context, newTodo *todo.NewTodo) (*todo.Todo, error) {
 						return &todo.Todo{
 							ID:     "todo_id_1",
 							Text:   "todo_text_1",
@@ -49,12 +48,6 @@ func TestCreateTodo(t *testing.T) {
 				f.mockBinder = &gateway.BinderMock{
 					BindFunc: func(contextMoqParam context.Context) context.Context {
 						return f.ctx
-					},
-				}
-
-				f.mockTransactor = &gateway.TransactorMock{
-					TransactionFunc: func(contextMoqParam context.Context, fn func(context.Context) error) error {
-						return nil
 					},
 				}
 			},
@@ -74,7 +67,7 @@ func TestCreateTodo(t *testing.T) {
 		"create message failure (gateway error)": {
 			prepare: func(f *fields) {
 				f.mockTodoCommandsGateway = &gateway.TodoCommandsGatewayMock{
-					CreateTodoFunc: func(ctx context.Context, newTodo *todo.NewTodo) (*todo.Todo, error) {
+					CreateFunc: func(ctx context.Context, newTodo *todo.NewTodo) (*todo.Todo, error) {
 						return nil, errors.New("this is an error")
 					},
 				}
@@ -109,7 +102,7 @@ func TestCreateTodo(t *testing.T) {
 				}
 			}
 
-			creator := NewTodoCreator(f.mockBinder, f.mockTransactor, f.mockTodoCommandsGateway)
+			creator := NewTodoCreator(f.mockBinder, f.mockTodoCommandsGateway)
 			out, err := creator.CreateTodo(
 				context.Background(),
 				&input.TodoCreator{
@@ -120,7 +113,7 @@ func TestCreateTodo(t *testing.T) {
 				t.Errorf("usecase.CreateTodo error %v, wantErr %v", err, tt.wantErr)
 			}
 
-			if len(f.mockTodoCommandsGateway.CreateTodoCalls()) != 1 {
+			if len(f.mockTodoCommandsGateway.CreateCalls()) != 1 {
 				t.Error("one creator.CreateTodo expected")
 			}
 

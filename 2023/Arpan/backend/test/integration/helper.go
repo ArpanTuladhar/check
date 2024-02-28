@@ -10,6 +10,7 @@ import (
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/utils/config"
 	"gorm.io/gorm"
 
+	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/domain/gateway"
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/domain/service"
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/handler"
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/infrastructure/todo"
@@ -55,10 +56,9 @@ func initHttpServerForIntegrationTest(ctx context.Context, gormDB *gorm.DB, dbNa
 	}
 
 	binder := todo.NewConnectionBinder(todoDBConn)
-	transactor := todo.NewTransactor(todoDBConn)
-
-	todoWriter := todo.NewTodoWriter()
-	todoCreator := service.NewTodoCreator(binder, transactor, todoWriter)
+	todoGatewayMock := &gateway.TodoCommandsGatewayMock{}
+	todoWriter := todo.NewTodoWriter(todoGatewayMock)
+	todoCreator := service.NewTodoCreator(binder, todoWriter)
 	handler := handler.NewHTTPServer(conf, middle, todoCreator)
 	return handler
 }
