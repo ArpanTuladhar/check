@@ -14,7 +14,7 @@ import (
 type todoWriter struct {
 }
 
-func NewTodoWriter(gateway gateway.TodoCommandsGateway) gateway.TodoCommandsGateway {
+func NewTodoWriter() gateway.TodoCommandsGateway {
 	return &todoWriter{}
 }
 

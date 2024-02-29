@@ -11,7 +11,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/domain/gateway"
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/domain/service"
 	h "github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/handler"
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/infrastructure/todo"
@@ -37,8 +36,8 @@ func main() {
 		panic(err)
 	}
 	binder := todo.NewConnectionBinder(ownerConn)
-	todoGatewayMock := &gateway.TodoCommandsGatewayMock{}
-	todoWriter := todo.NewTodoWriter(todoGatewayMock)
+
+	todoWriter := todo.NewTodoWriter()
 
 	todoCreator := service.NewTodoCreator(binder, todoWriter)
 
