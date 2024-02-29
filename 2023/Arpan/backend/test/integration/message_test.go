@@ -6,6 +6,8 @@ import (
 	"io"
 	"testing"
 
+	"github.com/google/go-cmp/cmp/cmpopts"
+
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -23,14 +25,14 @@ func Test_Integration_CreateTodo(t *testing.T) {
 	}
 
 	type todo struct {
-		ID   string `json:"id"`
+		Id   string `json:"id"`
 		Text string `json:"text"`
 		User user   `json:"user"`
 	}
 
 	type expected struct {
-		Todo       todo
-		StatusCode int
+		todo       todo
+		statusCode int
 	}
 	type createTodoResponse struct {
 		CreateTodo todo `json:"createTodo"`
@@ -40,11 +42,11 @@ func Test_Integration_CreateTodo(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		Args     args
-		Expected expected
+		args     args
+		expected expected
 	}{
 		"create todo success": {
-			Args: args{
+			args: args{
 				q: query{
 					Query: `
 						mutation {
@@ -64,7 +66,7 @@ func Test_Integration_CreateTodo(t *testing.T) {
 					`,
 				},
 			},
-			Expected: expected{Todo: todo{ID: "todo_id_1", Text: "todo_text_1", User: user{Id: "12345"}}, StatusCode: 200},
+			expected: expected{todo: todo{Text: "todo_text_1", User: user{Id: "12345"}}, statusCode: 200},
 		},
 	}
 
@@ -72,13 +74,17 @@ func Test_Integration_CreateTodo(t *testing.T) {
 		tt := tt
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
+			h := InitTodoDBTestHelper(t)
 
 			body := bytes.Buffer{}
-			if err := json.NewEncoder(&body).Encode(&tt.Args.q); err != nil {
+			if err := json.NewEncoder(&body).Encode(&tt.args.q); err != nil {
 				panic(err)
 			}
 			recorder := DoGraphQLRequest(
+				h.ctx,
 				&body,
+				h.gormDB,
+				h.dbName,
 			)
 			re, err := io.ReadAll(recorder.Result().Body)
 			if err != nil {
@@ -88,13 +94,16 @@ func Test_Integration_CreateTodo(t *testing.T) {
 			res := createTodoResponseData{}
 			json.Unmarshal(re, &res)
 
-			if recorder.Code != tt.Expected.StatusCode {
-				t.Errorf("[integration test] Mutation { CreateTodo }: actual statusCode = %v, expected statusCode = %v", recorder.Code, tt.Expected.StatusCode)
+			if recorder.Code != tt.expected.statusCode {
+				t.Errorf("[integration test] Mutation { CreateTodo }v: actual statusCode = %v, expected statusCode = %v", recorder.Code, tt.expected.statusCode)
 			}
 
-			if diff := cmp.Diff(res.Data.CreateTodo, tt.Expected.Todo); diff != "" {
+			cmpCmpOpts := cmpopts.IgnoreFields(todo{}, "Id")
+
+			if diff := cmp.Diff(res.Data.CreateTodo, tt.expected.todo, cmpCmpOpts); diff != "" {
 				t.Errorf("[integration test] query { CreateTodo } value is mismatch (-actual +expected):\n%s", diff)
 			}
 		})
 	}
+
 }

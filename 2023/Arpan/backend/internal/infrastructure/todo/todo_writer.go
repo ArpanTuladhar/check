@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 
+	"github.com/google/uuid"
+
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/domain/gateway"
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/domain/model/session"
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/domain/model/todo"
@@ -21,5 +23,23 @@ func (t todoWriter) Create(ctx context.Context, newTodo *todo.NewTodo) (*todo.To
 	if err != nil {
 		return nil, errors.New("failed to fetch a session")
 	}
-	return &todo.Todo{ID: "todo_id_1", Text: "todo_text_1", UserID: s.UserId}, nil
+	tx, err := ExtractTodoDB(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	createdTodo := &todo.Todo{
+		ID:     todo.TodoID(uuid.NewString()),
+		Text:   newTodo.Text,
+		UserID: s.UserId,
+	}
+
+	db := tx.WithContext(ctx)
+	if err := db.
+		Create(&createdTodo).
+		Take(&createdTodo).Error; err != nil {
+		return nil, err
+	}
+
+	return createdTodo, nil
 }

@@ -11,39 +11,38 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/config"
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/domain/service"
 	h "github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/handler"
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/infrastructure/todo"
 	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/middleware"
+	"github.com/88labs/andpad-engineer-training/2023/Arpan/backend/internal/utils/config"
 )
 
 func main() {
-	// Connect to the database
-	configObj, err := config.LoadAppConfig()
+	conf, err := config.LoadConfig()
 	if err != nil {
-		log.Fatalf("Error loading app configuration: %v", err)
+		log.Fatalf("Error loading configuration: %v", err)
 	}
 
-	db, err := configObj.Connect()
-	if err != nil {
-		log.Fatalf("Error connecting to the database: %v", err)
+	addr := fmt.Sprintf(":%d", conf.ServerPort)
+	listener, err2 := net.Listen("tcp", addr)
+	if err2 != nil {
+		log.Fatalf("Error starting listener: %v", err2)
 	}
-	defer db.Close()
 
-	port := configObj.App.Port
+	ownerConn, cleanup, err := todo.NewTodoSQLHandler(conf)
+	defer cleanup()
+	if err != nil {
+		panic(err)
+	}
+	binder := todo.NewConnectionBinder(ownerConn)
 
 	todoWriter := todo.NewTodoWriter()
-	todoCreator := service.NewTodoCreator(todoWriter)
+
+	todoCreator := service.NewTodoCreator(binder, todoWriter)
 
 	middle := middleware.NewMiddleware()
-	router := h.NewHTTPServer(middle, todoCreator)
-
-	addr := fmt.Sprintf(":%s", port)
-	listener, err := net.Listen("tcp", addr)
-	if err != nil {
-		log.Fatalf("Error starting listener: %v", err)
-	}
+	router := h.NewHTTPServer(conf, middle, todoCreator)
 
 	ch := make(chan error)
 	go func() {
@@ -60,6 +59,7 @@ func main() {
 		}
 	}()
 
+	fmt.Println("started todo server")
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
 	ctx, cancel := context.WithCancel(context.Background())

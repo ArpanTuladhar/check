@@ -14,7 +14,9 @@ import (
 
 func TestCreateTodo(t *testing.T) {
 	type fields struct {
+		ctx                     context.Context
 		mockTodoCommandsGateway *gateway.TodoCommandsGatewayMock
+		mockBinder              *gateway.BinderMock
 	}
 
 	type args struct {
@@ -40,6 +42,12 @@ func TestCreateTodo(t *testing.T) {
 							Text:   "todo_text_1",
 							UserID: 12345,
 						}, nil
+					},
+				}
+
+				f.mockBinder = &gateway.BinderMock{
+					BindFunc: func(contextMoqParam context.Context) context.Context {
+						return f.ctx
 					},
 				}
 			},
@@ -79,12 +87,22 @@ func TestCreateTodo(t *testing.T) {
 
 			f := fields{
 				mockTodoCommandsGateway: nil,
+				mockBinder:              nil,
 			}
 
 			if tt.prepare != nil {
 				tt.prepare(&f)
 			}
-			creator := NewTodoCreator(f.mockTodoCommandsGateway)
+
+			if f.mockBinder == nil {
+				f.mockBinder = &gateway.BinderMock{
+					BindFunc: func(contextMoqParam context.Context) context.Context {
+						return f.ctx
+					},
+				}
+			}
+
+			creator := NewTodoCreator(f.mockBinder, f.mockTodoCommandsGateway)
 			out, err := creator.CreateTodo(
 				context.Background(),
 				&input.TodoCreator{

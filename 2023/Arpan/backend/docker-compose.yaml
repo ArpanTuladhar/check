@@ -1,0 +1,44 @@
+---
+version: "3.8"
+services:
+  database:
+    image: mysql:5.7
+    platform: linux/x86_64
+    container_name: database
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: docker
+      TZ: "Asia/Tokyo"
+    volumes:
+      - ./database/docker/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./database/docker/sqls:/docker-entrypoint-initdb.d
+    ports:
+      - "3307:3306"
+    expose:
+      - 3307
+    profiles:
+      - app
+      - dev
+      - db
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  dbmigrator:
+    build:
+      context: .
+      dockerfile: database/docker/Dockerfile
+    depends_on:
+      - database
+    command: /bin/bash
+    tty: true
+    stdin_open: true
+    volumes:
+      - .:/andpad
+    profiles:
+      - db
